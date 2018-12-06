@@ -4,7 +4,6 @@ import sys
 import json
 import dicttoxml
 import threading
-import pyAesCrypt
 
 host = socket.gethostname()   #Default is to send files to localhost
 port = 65530  # Default port
@@ -43,13 +42,17 @@ def converttoxml(inputdir,processeddir):
                     outputxml.close()
                     f.close()
 
-def encryptandsend(processeddir,sentdir):
-    while True:
-        sent = getsent(sentdir)
-        for i in os.listdir(processeddir):
-            if i.endswith('.xml'):
-                if i[0:-4] not in sent:
-                    print(i)
+# def encryptandsend(processeddir,sentdir,secret,bufferSize):
+#     secret = "foopassword"
+#     bufferSize = 64 * 1024
+#     while True:
+#         sent = getsent(sentdir)
+#         for i in os.listdir(processeddir):
+#             if i.endswith('.xml'):
+#                 if i[0:-4] not in sent:
+#                     source=processeddir+"/"+i
+#                     dest=sentdir+"/"+i+".aes"
+#                     pyAesCrypt.encryptFile(source, "data.txt.aes", password, bufferSize)
 
 def getprocessedxml(processeddir):
     processed = []
@@ -74,8 +77,24 @@ def getsent(sentdir):
 # s.sendall(b)
 # s.close()
 
+def sendtoremote(processeddir,sentdir,socket):
+        sent = getsent(sentdir)
+        for i in os.listdir(processeddir):
+            if i.endswith('.xml'):
+                if i[0:-5] not in sent:
+                    with open(processeddir+"/"+i, 'r') as f:
+                        content = f.read()
+                        senddata = i+"|"+str(len(content))+"|"+content
+                        b = bytearray()
+                        b.extend(str(senddata))
+                        socket.sendall(b)
+
 if __name__ == "__main__":
     loadconfig()
     #convert_handler = threading.Thread(target=converttoxml,args=(input_files,processed_files))
     #convert_handler.start()
-    encryptandsend(processed_files,sent_files):
+    socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket.connect((host,int(port)))
+    while True:
+        sendtoremote(processed_files,sent_files,socket)
+    socket.close()

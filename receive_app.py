@@ -19,7 +19,7 @@ def handle_client(client_socket,client_addr):
                 break
             filename =  filename + data
         except socket.error:
-            print "Error Occured."
+            print("Error Occured.")
     while True:
         try:
             data = client_socket.recv(1)
@@ -27,7 +27,7 @@ def handle_client(client_socket,client_addr):
                 break
             length =  length + data
         except socket.error:
-            print "Error Occured."
+            print("Error Occured.")
     output = open(received_files+"/"+filename,"w+")
     while True:
         try:
@@ -36,7 +36,7 @@ def handle_client(client_socket,client_addr):
                 break
             output.write(data)
         except socket.error:
-            print "Error Occured."
+            print("Error Occured.")
             break
     output.close()
 
