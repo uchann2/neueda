@@ -3,13 +3,16 @@ import os
 import sys
 import json
 import dicttoxml
-
+import threading
+import pyAesCrypt
 
 host = socket.gethostname()   #Default is to send files to localhost
 port = 65530  # Default port
 input_files = "./input" #Check for ./input folder by default
-processed_files = "./sent" #Save processed files to ./sent folder by default
+processed_files = "./xmls" #Save processed files to ./sent folder by default
+sent_files = "./sent" #default location for sent files
 secret = ''
+bufferSize = 64 * 1024
 
 def loadconfig():
     with open('./config/send_config.json', 'r') as f:
@@ -26,25 +29,41 @@ def loadconfig():
     secret  = config['secret']
     f.close()
 
-def converttoxml():
-    processed = getprocessedxml()
-    for i in os.listdir(input_files):
-        if i.endswith('.json'):
-            if i[0:-5] not in processed:
-                with open(input_files+"/"+i, 'r') as f:
-                    config  = json.load(f)
-                xml = dicttoxml.dicttoxml(config)
-                outputxml = open(processed_files+"/"+i[0:-5]+".xml","w")
-                outputxml.write(xml)
-                outputxml.close()
-                f.close()
+def converttoxml(inputdir,processeddir):
+    while True:
+        processed = getprocessedxml(processeddir)
+        for i in os.listdir(inputdir):
+            if i.endswith('.json'):
+                if i[0:-5] not in processed:
+                    with open(inputdir+"/"+i, 'r') as f:
+                        config  = json.load(f)
+                    xml = dicttoxml.dicttoxml(config)
+                    outputxml = open(processeddir+"/"+i[0:-5]+".xml","w")
+                    outputxml.write(xml)
+                    outputxml.close()
+                    f.close()
 
-def getprocessedxml():
+def encryptandsend(processeddir,sentdir):
+    while True:
+        sent = getsent(sentdir)
+        for i in os.listdir(processeddir):
+            if i.endswith('.xml'):
+                if i[0:-4] not in sent:
+                    print(i)
+
+def getprocessedxml(processeddir):
     processed = []
-    for i in os.listdir(processed_files):
+    for i in os.listdir(processeddir):
         if i.endswith('.xml'):
             processed.append(i[0:-4])
     return processed
+
+def getsent(sentdir):
+    sent = []
+    for i in os.listdir(sentdir):
+        if i.endswith('.aes'):
+            sent.append(i[0:-8])
+    return sent
 # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # s.connect((host, port))
 # inputstring = 'Hello, world, hey yall second file'
@@ -57,4 +76,6 @@ def getprocessedxml():
 
 if __name__ == "__main__":
     loadconfig()
-    converttoxml()
+    #convert_handler = threading.Thread(target=converttoxml,args=(input_files,processed_files))
+    #convert_handler.start()
+    encryptandsend(processed_files,sent_files):
