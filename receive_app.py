@@ -1,9 +1,11 @@
 import socket
 import sys
 import threading
+import os
 
-host = ''        # Symbolic name meaning all available interfaces
-port = 12346     # Arbitrary non-privileged port
+host = ''   #Default is to receive files from any interface
+port = 12345  # Default port
+received_files = "./received" #Save received files to ./received folder by default
 
 def handle_client(client_socket,client_addr):
     print('Connected by', client_addr)
@@ -26,7 +28,7 @@ def handle_client(client_socket,client_addr):
             length =  length + data
         except socket.error:
             print "Error Occured."
-    output = open("./received/"+filename,"w+")
+    output = open(received_files+"/"+filename,"w+")
     while True:
         try:
             data = client_socket.recv(int(length))

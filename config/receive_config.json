@@ -1,0 +1,6 @@
+{
+    "receive_host":"192.168.0.12",
+    "receive_port":"12346",
+    "received_files":"./received",
+    "secret":"MyS3cret"
+}
