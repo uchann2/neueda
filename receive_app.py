@@ -9,36 +9,41 @@ received_files = "./received" #Save received files to ./received folder by defau
 
 def handle_client(client_socket,client_addr):
     print('Connected by', client_addr)
-    msg = ''
-    filename = ''
-    length = ''
     while True:
-        try:
-            data = client_socket.recv(1)
-            if data == '|': 
-                break
-            filename =  filename + data
-        except socket.error:
-            print("Error Occured.")
-    while True:
-        try:
-            data = client_socket.recv(1)
-            if data == '|': 
-                break
-            length =  length + data
-        except socket.error:
-            print("Error Occured.")
-    output = open(received_files+"/"+filename,"w+")
-    while True:
-        try:
+        filename = ''
+        length = ''
+        while True:
+            try:
+                data = client_socket.recv(1)
+                if data == '|' or data == '': 
+                    break
+                filename =  filename + data
+            except socket.error:
+                print("Error Occured.")
+        print(filename)
+        while True:
+            try:
+                data = client_socket.recv(1)
+                if data == '|' or data == '': 
+                    break
+                length =  length + data
+            except socket.error:
+                print("Error Occured.")
+        print(length)
+        if length != '':
             data = client_socket.recv(int(length))
-            if not data:
-                break
-            output.write(data)
-        except socket.error:
-            print("Error Occured.")
+        if data == '':
             break
-    output.close()
+        print(data)
+        writetofile(filename,data)
+
+def writetofile(filename,data):
+        try:
+            output = open(received_files+"/"+filename,"w+")
+            output.write(data) 
+            output.close()
+        except:
+            writetoconsole("Cannot write to file.")
 
 if __name__ == "__main__":
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

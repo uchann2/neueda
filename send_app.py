@@ -5,7 +5,7 @@ import json
 import dicttoxml
 import threading
 
-host = socket.gethostname()   #Default is to send files to localhost
+host = "127.0.0.1"  #Default is to send files to localhost
 port = 65530  # Default port
 input_files = "./input" #Check for ./input folder by default
 processed_files = "./xmls" #Save processed files to ./sent folder by default
@@ -28,15 +28,23 @@ def loadconfig():
     secret  = config['secret']
     f.close()
 
-def converttoxml(inputdir,processeddir):
+def converttoxml(inputdir,processeddir,socket):
     while True:
         processed = getprocessedxml(processeddir)
         for i in os.listdir(inputdir):
             if i.endswith('.json'):
                 if i[0:-5] not in processed:
                     with open(inputdir+"/"+i, 'r') as f:
-                        config  = json.load(f)
+                        try:
+                            config  = json.load(f)
+                        except ValueError:
+                            print("retrying")
+                            break
                     xml = dicttoxml.dicttoxml(config)
+                    senddata = i[0:-5]+".xml"+"|"+str(len(xml))+"|"+xml
+                    b = bytearray()
+                    b.extend(str(senddata))
+                    socket.sendall(b)
                     outputxml = open(processeddir+"/"+i[0:-5]+".xml","w")
                     outputxml.write(xml)
                     outputxml.close()
@@ -81,20 +89,22 @@ def sendtoremote(processeddir,sentdir,socket):
         sent = getsent(sentdir)
         for i in os.listdir(processeddir):
             if i.endswith('.xml'):
-                if i[0:-5] not in sent:
+                if i[0:-4] not in sent:
                     with open(processeddir+"/"+i, 'r') as f:
                         content = f.read()
                         senddata = i+"|"+str(len(content))+"|"+content
                         b = bytearray()
                         b.extend(str(senddata))
                         socket.sendall(b)
+                        sentfile = open(sentdir+"/"+i+".aes","w+")
+                        sentfile.write(senddata)
+                        sentfile.close()
+                else:
+                    pass
 
 if __name__ == "__main__":
     loadconfig()
-    #convert_handler = threading.Thread(target=converttoxml,args=(input_files,processed_files))
-    #convert_handler.start()
     socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socket.connect((host,int(port)))
-    while True:
-        sendtoremote(processed_files,sent_files,socket)
+    converttoxml(input_files,processed_files,socket)
     socket.close()

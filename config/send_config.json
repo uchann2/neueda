@@ -1,5 +1,5 @@
 {
-    "receive_host":"192.168.0.12",
+    "receive_host":"127.0.0.1",
     "receive_port":"12345",
     "input_files":"./input",
     "processed_files":"./xmls",
