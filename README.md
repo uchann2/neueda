@@ -15,6 +15,10 @@ Following docker compose file was only created to allow testing in a local envir
 
 For the demonstration it will create a bridge network with static ips. 
 
+## In your host, where send_app.py container runs, check the bind mount of ./xmls to see the encrypted xml values.
+
+## In your host, where receive_app.py container runs, check the bind mount of ./received to see the encrypted xml values.
+
 ### IMPORTANT: Please make sure to apply the same ip/port settings in the docker-compose.yml file, to be identical with app configurations, that can be found in ./config/receive_config.json and ./config/send_config.json.
 
 

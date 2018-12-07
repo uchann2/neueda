@@ -43,13 +43,14 @@ def converttoxml(inputdir,processeddir,socket):
                             print("retrying")
                             break
                     xml = dicttoxml.dicttoxml(config)
-                    #encdata = str(encryptdata(xml))
-                    senddata = i[0:-5]+".xml"+"|"+str(len(xml))+"|"+xml
+                    encdata = str(encryptdata(xml))
+                    senddata = i[0:-5]+".xml"+"|"+str(len(xml))+"|"
                     b = bytearray()
                     b.extend(str(senddata))
+                    b.extend(encdata)
                     socket.sendall(b)
-                    outputxml = open(processeddir+"/"+i[0:-5]+".xml","w")
-                    outputxml.write(xml)
+                    outputxml = open(processeddir+"/"+i[0:-5]+".xml","wb")
+                    outputxml.write(encdata)
                     outputxml.close()
                     f.close()
 
