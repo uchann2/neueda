@@ -1,9 +1,11 @@
+# coding: utf-8
 import socket
 import os
 import sys
 import json
 import dicttoxml
 import threading
+from Crypto.Cipher import AES
 
 host = "127.0.0.1"  #Default is to send files to localhost
 port = 65530  # Default port
@@ -41,6 +43,7 @@ def converttoxml(inputdir,processeddir,socket):
                             print("retrying")
                             break
                     xml = dicttoxml.dicttoxml(config)
+                    #encdata = str(encryptdata(xml))
                     senddata = i[0:-5]+".xml"+"|"+str(len(xml))+"|"+xml
                     b = bytearray()
                     b.extend(str(senddata))
@@ -50,17 +53,11 @@ def converttoxml(inputdir,processeddir,socket):
                     outputxml.close()
                     f.close()
 
-# def encryptandsend(processeddir,sentdir,secret,bufferSize):
-#     secret = "foopassword"
-#     bufferSize = 64 * 1024
-#     while True:
-#         sent = getsent(sentdir)
-#         for i in os.listdir(processeddir):
-#             if i.endswith('.xml'):
-#                 if i[0:-4] not in sent:
-#                     source=processeddir+"/"+i
-#                     dest=sentdir+"/"+i+".aes"
-#                     pyAesCrypt.encryptFile(source, "data.txt.aes", password, bufferSize)
+def encryptdata(data):
+    encryption_suite = AES.new(secret, AES.MODE_CBC, 16 * '\x00')
+    cipher_text = encryption_suite.encrypt(data)
+    print(cipher_text)
+    return cipher_text
 
 def getprocessedxml(processeddir):
     processed = []
@@ -68,39 +65,6 @@ def getprocessedxml(processeddir):
         if i.endswith('.xml'):
             processed.append(i[0:-4])
     return processed
-
-def getsent(sentdir):
-    sent = []
-    for i in os.listdir(sentdir):
-        if i.endswith('.aes'):
-            sent.append(i[0:-8])
-    return sent
-# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# s.connect((host, port))
-# inputstring = 'Hello, world, hey yall second file'
-# length = len(inputstring)
-# sendstring = "File-2.txt|"+str(length)+"|"+ inputstring
-# b = bytearray()
-# b.extend(sendstring)
-# s.sendall(b)
-# s.close()
-
-def sendtoremote(processeddir,sentdir,socket):
-        sent = getsent(sentdir)
-        for i in os.listdir(processeddir):
-            if i.endswith('.xml'):
-                if i[0:-4] not in sent:
-                    with open(processeddir+"/"+i, 'r') as f:
-                        content = f.read()
-                        senddata = i+"|"+str(len(content))+"|"+content
-                        b = bytearray()
-                        b.extend(str(senddata))
-                        socket.sendall(b)
-                        sentfile = open(sentdir+"/"+i+".aes","w+")
-                        sentfile.write(senddata)
-                        sentfile.close()
-                else:
-                    pass
 
 if __name__ == "__main__":
     loadconfig()

@@ -1,8 +1,8 @@
 {
     "receive_host":"127.0.0.1",
-    "receive_port":"12345",
+    "receive_port":"12346",
     "input_files":"./input",
     "processed_files":"./xmls",
     "sent_files":"./sent",
-    "secret":"MyS3cret"
+    "secret":"0123456789abcdef"
 }

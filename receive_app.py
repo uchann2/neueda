@@ -2,10 +2,25 @@ import socket
 import sys
 import threading
 import os
+import json
+from Crypto.Cipher import AES
 
 host = ''   #Default is to receive files from any interface
 port = 12345  # Default port
 received_files = "./received" #Save received files to ./received folder by default
+secret = ''
+def loadconfig():
+    with open('./config/receive_config.json', 'r') as f:
+        config  = json.load(f)
+    global host
+    host = config['receive_host']
+    global port
+    port = config['receive_port']
+    global received_files
+    received_files = config ['received_files']
+    global secret
+    secret  = config['secret']
+    f.close()
 
 def handle_client(client_socket,client_addr):
     print('Connected by', client_addr)
@@ -46,8 +61,9 @@ def writetofile(filename,data):
             writetoconsole("Cannot write to file.")
 
 if __name__ == "__main__":
+    loadconfig()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((host, port))
+    s.bind((host, int(port)))
     s.listen(1)
     while True:
         conn, addr = s.accept()
