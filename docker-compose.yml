@@ -1,0 +1,12 @@
+version: '3'
+services:
+  receive-data:
+    build:
+      context: ./
+      dockerfile: Dockerfile.receive
+    image: receive-data
+    ports:
+     - "5000:5000"
+    volumes:
+      - ./config/:/usr/src/app/config
+      - ./received/:/usr/src/app/received
