@@ -71,7 +71,7 @@ Upon the receipt of the data it saves the data to /usr/src/app/received location
 
 ### IMPORTANT: Make sure the volume names in docker-compose.yml match with what is mentioned in ./config/receive_config.json ./config/send_config.json files
 
-1. send_app.py -> This is the client end of the application.Once run, It will lokk for unprocessed files in input directory and send them to server ip and port specified in ./config/send_config.json. For this to work successfully given ip:port should be accessible from the container
+2. send_app.py -> This is the client end of the application.Once run, It will lokk for unprocessed files in input directory and send them to server ip and port specified in ./config/send_config.json. For this to work successfully given ip:port should be accessible from the container
 
 ```python
 "<file-name>|<length of data following>|<actual data>"
