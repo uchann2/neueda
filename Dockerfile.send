@@ -4,6 +4,9 @@ WORKDIR /usr/src/app
 RUN mkdir -p /usr/src/app/input
 RUN mkdir -p /usr/src/app/xmls
 RUN mkdir -p /usr/src/app/sent
+RUN mkdir -p /usr/src/app/config
 COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+COPY ./config/send_config.json ./config/send_config.json
 COPY send_app.py ./
 CMD [ "python", "./send_app.py" ]
