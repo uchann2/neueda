@@ -1,0 +1,9 @@
+FROM python:2
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+RUN mkdir -p /usr/src/app/input
+RUN mkdir -p /usr/src/app/xmls
+RUN mkdir -p /usr/src/app/sent
+COPY requirements.txt ./
+COPY send_app.py ./
+CMD [ "python", "./send_app.py" ]
