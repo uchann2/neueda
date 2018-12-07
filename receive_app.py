@@ -49,8 +49,15 @@ def handle_client(client_socket,client_addr):
             data = client_socket.recv(int(length))
         if data == '':
             break
-        print(data)
-        writetofile(filename,data)
+        decrypteddata = decryptdata(data)
+        print(decrypteddata)
+        writetofile(filename,decrypteddata)
+
+def decryptdata(data):
+    decryption_suite = AES.new(secret, AES.MODE_CBC, 16 * '\x00')
+    plain_text = decryption_suite.decrypt(data)
+    print(plain_text)
+    return plain_text
 
 def writetofile(filename,data):
         try:
