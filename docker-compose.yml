@@ -8,7 +8,7 @@ services:
     ports:
      - "5000:5000"
     networks:
-            vpcbr:
+            app_net:
                 ipv4_address: 10.5.0.5
     volumes:
       - ./config/:/usr/src/app/config
@@ -25,10 +25,12 @@ services:
       - ./input/:/usr/src/app/input
       - ./xmls/:/usr/src/app/xmls
       - ./sent/:/usr/src/app/sent
+    networks:
+            app_net:
+                ipv4_address: 10.5.0.10
 networks:
-    vpcbr:
+    app_net:
         driver: bridge
         ipam:
           config:
             - subnet: 10.5.0.0/16
-              gateway: 10.5.0.1
