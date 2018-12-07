@@ -7,5 +7,4 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY ./config/receive_config.json ./config/receive_config.json
 COPY receive_app.py ./
-EXPOSE 12346
 CMD [ "python", "./receive_app.py" ]
