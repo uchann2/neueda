@@ -1,6 +1,6 @@
 {
     "receive_host":"0.0.0.0",
-    "receive_port":"12346",
+    "receive_port":"5000",
     "received_files":"./received",
     "secret":"0123456789abcdef"
 }

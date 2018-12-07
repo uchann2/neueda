@@ -7,6 +7,28 @@ services:
     image: receive-data
     ports:
      - "5000:5000"
+    networks:
+            vpcbr:
+                ipv4_address: 10.5.0.5
     volumes:
       - ./config/:/usr/src/app/config
       - ./received/:/usr/src/app/received
+  send-data:
+    build:
+      context: ./
+      dockerfile: Dockerfile.send
+    image: send-data
+    depends_on:
+      - receive-data
+    volumes:
+      - ./config/:/usr/src/app/config
+      - ./input/:/usr/src/app/input
+      - ./xmls/:/usr/src/app/xmls
+      - ./sent/:/usr/src/app/sent
+networks:
+    vpcbr:
+        driver: bridge
+        ipam:
+          config:
+            - subnet: 10.5.0.0/16
+              gateway: 10.5.0.1
